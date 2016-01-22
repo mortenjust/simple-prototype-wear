@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.wearable.view.BoxInsetLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/container"
+    tools:context="com.mortenjust.chatappoidssbs.MainActivity"
+    tools:deviceIds="wear">
+
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="com.mortenjust.chatappoidssbs.SideBySideFragment"
+        tools:layout="@layout/fragment_side_by_side" />
+
+</android.support.wearable.view.BoxInsetLayout>
