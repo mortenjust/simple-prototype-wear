@@ -7,11 +7,7 @@ import android.graphics.Point;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Display;
-import android.widget.Toast;
 
-/**
- * Created by mortenjust on 1/21/16.
- */
 public class Util {
     static Point getScreenSize(Activity activity){
 
