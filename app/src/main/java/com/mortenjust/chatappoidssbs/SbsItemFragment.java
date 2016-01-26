@@ -4,8 +4,12 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Handler;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -26,13 +30,17 @@ public class SbsItemFragment extends Fragment {
     private static final String ARG_IMAGE = "imageId";
     private static final String ARG_SCROLL = "scrollPositionY";
     private static final String ARG_NAME = "name";
-    private int mImageId;
-    private int mScrollY;
-    private String mName;
+    int mImageId;
+    int mScrollY;
+    String mName;
 
-    private ImageView sbsImageView;
-    private ScrollView scrollView;
+    ImageView sbsImageView;
+    ScrollView scrollView;
+    ImageView bottomSheetImage;
     String TAG = "mj.sbsitemfrag";
+    Handler bottomSheetDownHandler = new Handler();
+    boolean wasScrolling = false;
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -60,13 +68,63 @@ public class SbsItemFragment extends Fragment {
             mName = getArguments().getString(ARG_NAME);
             mScrollY = getArguments().getInt(ARG_SCROLL);
         }
+        Log.d(TAG, "onCreate: " + mName);
     }
 
     public void becameVisible(){
-        // somhow this is called before onCreate, so not everything is available
-        Log.d(TAG, "becameVisible: "+mName);
-        Log.d(TAG, "becameVisible: "+getArguments().getString(ARG_NAME));
+        setupScrollView(scrollView);
+        resetBottomSheet();
+        startBottomSheetTimer();
     }
+
+    void resetAndStartBottomSheetTimer(){
+        resetBottomSheet();
+        startBottomSheetTimer();
+    }
+
+    void resetBottomSheet() {
+        Log.d(TAG, "resetBottomSheet: ");
+//        bottomSheetImage.setY(Util.getScreenSize(getActivity()).y - 50);
+        int targetY = Util.getScreenSize(getActivity()).y - 50;
+        bottomSheetImage.animate()
+                .y(targetY)
+                .setDuration(50)
+                .setInterpolator(new FastOutSlowInInterpolator())
+                .start();
+    }
+
+    void startBottomSheetTimer(){
+        Log.d(TAG, "startBottomSheetTimer: ");
+        // reset handler
+
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "run: ");
+                bottomSheetDownHandler.removeCallbacks(this);
+                animateBottomSheetDown();
+            }
+        };
+
+        bottomSheetDownHandler.removeCallbacks(runnable);
+        bottomSheetDownHandler.postDelayed(runnable, 1000);
+    }
+
+    void animateBottomSheetDown() {
+        Log.d(TAG, "animateBottomSheetDown: ");
+
+        if(bottomSheetImage != null && getActivity() != null){
+        bottomSheetImage.animate()
+                .y(Util.getScreenSize(getActivity()).y)
+                .setDuration(300)
+                .setInterpolator(new LinearOutSlowInInterpolator())
+                .start();
+        } else {
+            Log.d(TAG, "animateBottomSheetDown: ButtomsheetImage was NULL");
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -75,18 +133,40 @@ public class SbsItemFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_sbs_item, container, false);
         sbsImageView = (ImageView) v.findViewById(R.id.sbs_image);
         scrollView = (ScrollView) v.findViewById(R.id.scrollView);
+//        bottomSheet = (BottomSheetFragment) v.findViewById(R.id.bottom_sheet);
+//        bottomSheet = (BottomSheetFragment) getFragmentManager().findFragmentById(R.id.bottom_sheet);
+
+        bottomSheetImage = (ImageView) v.findViewById(R.id.bottom_sheet_image);
+        resetBottomSheet();
+        startBottomSheetTimer();
+
         setupScrollView(scrollView);
-
         setImage(mImageId, sbsImageView);
+        setupViewListeners();
 
-        setupViewListeners(v);
         return v;
     }
 
-    void setupViewListeners(View v){
+    void setupViewListeners(){
+//  TODO: Fix this shit
+//        bottomSheetImage.setY(100);
+//        bottomSheetImage.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                Log.d(TAG, "onTouch: picture touched");
+//                switch (event.getAction()){
+//
+//                    case MotionEvent.ACTION_MOVE:
+//                        Log.d(TAG, "onTouch: moved");
+//                        bottomSheetImage.setY(event.getRawY());
+//                        break;
+//                }
+//                return true;
+//            }
+//        });
     }
 
-    void setupImageListeners(ImageView i){
+    void setupImageListeners(ImageView i) {
         i.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,7 +185,7 @@ public class SbsItemFragment extends Fragment {
         view.getLayoutParams().height = imageHeight;
         view.setImageResource(id);
         String resname = getResources().getResourceName(id);
-        Log.d(TAG, "setImage: resname "+resname);
+        Log.d(TAG, "setImage: resname " + resname);
         setupImageListeners(view);
     }
 
@@ -122,9 +202,33 @@ public class SbsItemFragment extends Fragment {
         scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @Override
             public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                Log.d(TAG, "onScrollChange: "+scrollY);
+                if (scrollY > oldScrollY) {
+                    Log.d(TAG, "onScrollChange: scrolled down, so peek");
+                    resetBottomSheet();
+                    wasScrolling = true;
+                }
             }
         });
+
+        scrollView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch(event.getAction()){
+                    case MotionEvent.ACTION_UP:
+                        if(wasScrolling){
+                            startBottomSheetTimer();
+                            wasScrolling=false;
+                        }
+                        break;
+                    default:
+                        break;
+
+                }
+                return false;
+            }
+        });
+
+
 
     }
 

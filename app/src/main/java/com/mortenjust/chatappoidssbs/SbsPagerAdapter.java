@@ -31,6 +31,7 @@ public class SbsPagerAdapter extends FragmentGridPagerAdapter {
         SbsImage image = images[i1];
         Fragment f = SbsItemFragment.newInstance(image.imageId, image.initialScrollY, image.name);
         return f;
+
     }
 
 

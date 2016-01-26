@@ -25,6 +25,7 @@ public class SideBySideFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     String TAG = "mj.sidebysidefragment";
+    SbsItemFragment currentFragment;
 
     GridViewPager sbsPager;
 
@@ -66,8 +67,10 @@ public class SideBySideFragment extends Fragment {
         return v;
     }
 
-    void setupPager(GridViewPager pager){
+    void setupPager(final GridViewPager pager){
         final SbsPagerAdapter adapter = new SbsPagerAdapter(getFragmentManager());
+
+
         pager.setOnPageChangeListener(new GridViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, int i1, float v, float v1, int i2, int i3) {
@@ -77,17 +80,26 @@ public class SideBySideFragment extends Fragment {
             @Override
             public void onPageSelected(int i, int i1) {
                 Log.d(TAG, "onPageSelected: " + i1);
-                SbsItemFragment f = (SbsItemFragment) adapter.getFragment(i, i1);
-                f.becameVisible();
+                currentFragment = (SbsItemFragment) adapter.findExistingFragment(i, i1);
+                Log.d(TAG, "onPageSelected: the winner is "+currentFragment.mName);
+                currentFragment.becameVisible();
             }
 
             @Override
             public void onPageScrollStateChanged(int i) {
               //  Log.d(TAG, "onPageScrollStateChanged: "+i);
-
+                switch(i){
+                    case GridViewPager.SCROLL_STATE_IDLE:
+//                        currentFragment.becameVisible();
+                        Log.d(TAG, "onPageScrollStateChanged: " + i);
+//                        Log.d(TAG, "onPageScrollStateChanged: trying to start timer on fragment "+currentFragment.mName);
+//                        currentFragment.startBottomSheetTimer();
+                        break;
+                }
             }
         });
         pager.setAdapter(adapter);
+
     }
 
 

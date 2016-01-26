@@ -1,9 +1,14 @@
 package com.mortenjust.chatappoidssbs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by mortenjust on 1/21/16.
  */
 public class SbsStore {
+    private static SbsStore instance = null;
+    List<SbsItemFragment> allItems = null;
 
         static SbsImage[] allImages = {
                 // image id, scroll position, description
@@ -22,4 +27,13 @@ public class SbsStore {
                 new SbsImage(R.drawable.smart_reply_c6, 150, "c6"),
                 new SbsImage(R.drawable.smart_reply_c7, 150, "c7")
         };
+
+    protected SbsStore(){}
+
+    public static SbsStore getInstance() {
+        if(instance == null){
+            instance = new SbsStore();
+        }
+        return instance;
+    }
 }

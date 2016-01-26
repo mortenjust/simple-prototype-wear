@@ -10,7 +10,6 @@ import android.view.Display;
 
 public class Util {
     static Point getScreenSize(Activity activity){
-
         Display display = activity.getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
