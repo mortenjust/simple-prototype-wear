@@ -6,13 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/container"
-    tools:context="com.mortenjust.chatappoidssbs.MainActivity"
+    android:background="@color/dark_grey"
+    tools:context="com.mortenjust.wearslideshow.MainActivity"
     tools:deviceIds="wear">
 
     <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.mortenjust.chatappoidssbs.SideBySideFragment"
-        tools:layout="@layout/fragment_side_by_side" />
+        android:name="com.mortenjust.wearslideshow.SideBySideFragment"
+        tools:layout="@layout/fragment_side_by_side"
+        android:id="@+id/fragment" />
 
 </android.support.wearable.view.BoxInsetLayout>

@@ -3,8 +3,9 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="fill_parent"
-    android:background="@color/blue"
-    tools:context="com.mortenjust.chatappoidssbs.SbsItemFragment">
+    android:background="@color/dark_grey"
+    android:backgroundTint="@color/dark_grey"
+    tools:context=".SlideItemFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -18,9 +19,10 @@
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="709px"
+                android:layout_height="wrap_content"
                 android:id="@+id/sbs_image"
-                android:src="@drawable/smart_reply_a1"
+                android:scaleType="fitStart"
+                android:src="@drawable/mock01"
                 android:layout_gravity="top"
                 android:background="@color/white"
                 />
